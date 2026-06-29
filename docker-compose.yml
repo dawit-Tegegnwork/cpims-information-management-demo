@@ -1,0 +1,12 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      CPIMS_DATABASE_URL: sqlite:///./cpims_demo.db
+    volumes:
+      - cpims_data:/app
+
+volumes:
+  cpims_data:
