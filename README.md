@@ -2,6 +2,14 @@
 
 A portfolio-quality demonstration of **Child Protection Information Management System (CPIMS)** concepts: case registration, data completeness scoring, duplicate detection, status tracking, CSV import/export, and data quality reporting.
 
+[![Tests](https://github.com/dawit-Tegegnwork/cpims-information-management-demo/actions/workflows/test.yml/badge.svg)](https://github.com/dawit-Tegegnwork/cpims-information-management-demo/actions/workflows/test.yml)
+
+**Requirements:** Python 3.12+
+
+## Screenshot
+
+![OpenAPI docs](docs/screenshots/swagger.png)
+
 > **Important:** All data in this repository is **synthetic**. No real individuals, cases, or employer systems are represented. This project is designed for recruiters and hiring managers to evaluate information management and data quality engineering skills.
 
 ## Highlights
