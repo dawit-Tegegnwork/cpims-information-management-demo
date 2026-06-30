@@ -49,7 +49,20 @@ def update_case(db: Session, record: CaseRecord, payload: CaseRecordUpdate) -> C
     return record
 
 
+ALLOWED_STATUS_TRANSITIONS: dict[CaseStatus, set[CaseStatus]] = {
+    CaseStatus.DRAFT: {CaseStatus.REGISTERED, CaseStatus.ARCHIVED},
+    CaseStatus.REGISTERED: {CaseStatus.UNDER_REVIEW, CaseStatus.ACTIVE, CaseStatus.ARCHIVED},
+    CaseStatus.UNDER_REVIEW: {CaseStatus.ACTIVE, CaseStatus.CLOSED, CaseStatus.ARCHIVED},
+    CaseStatus.ACTIVE: {CaseStatus.CLOSED, CaseStatus.ARCHIVED},
+    CaseStatus.CLOSED: {CaseStatus.ARCHIVED},
+    CaseStatus.ARCHIVED: set(),
+}
+
+
 def update_status(db: Session, record: CaseRecord, status: CaseStatus) -> CaseRecord:
+    allowed = ALLOWED_STATUS_TRANSITIONS.get(record.status, set())
+    if status not in allowed and status != record.status:
+        raise ValueError(f"Cannot transition from {record.status.value} to {status.value}")
     record.status = status
     record.updated_at = datetime.utcnow()
     db.commit()

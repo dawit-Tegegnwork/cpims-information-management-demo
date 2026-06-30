@@ -64,7 +64,10 @@ def update_case_status(case_id: int, status: CaseStatus, db: Session = Depends(g
     record = crud.get_case(db, case_id)
     if not record:
         raise HTTPException(status_code=404, detail="Case not found")
-    return crud.update_status(db, record, status)
+    try:
+        return crud.update_status(db, record, status)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/cases/{case_id}/completeness", response_model=CompletenessResult)

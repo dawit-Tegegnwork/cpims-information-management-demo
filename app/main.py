@@ -139,11 +139,60 @@ def landing_page():
               <div class="card"><strong>NGO readiness</strong>CSV workflows, user guide, and reporting documentation.</div>
             </div>
             <div class="actions">
-              <a href="/docs">Open API docs</a>
+              <a href="/dashboard">Operations dashboard</a>
+              <a class="secondary" href="/docs">Open API docs</a>
               <a class="secondary" href="/api/v1/reports/data-quality">View data quality report</a>
             </div>
           </section>
         </main>
       </body>
+    </html>
+    """
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard_page():
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8" />
+      <title>CPIMS Demo Dashboard</title>
+      <style>
+        body { font-family: system-ui, sans-serif; margin: 2rem; background: #f8fafc; color: #0f172a; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; }
+        th, td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 0.9rem; }
+        th { background: #f1f5f9; }
+        .warn { color: #b45309; font-weight: 600; }
+      </style>
+    </head>
+    <body>
+      <h1>CPIMS Operations Dashboard</h1>
+      <p>Synthetic case records — portfolio demo only.</p>
+      <div id="quality">Loading data quality summary...</div>
+      <h2>Cases</h2>
+      <table>
+        <thead><tr><th>Case #</th><th>Child</th><th>County</th><th>Status</th><th>Completeness</th></tr></thead>
+        <tbody id="cases"><tr><td colspan="5">Loading...</td></tr></tbody>
+      </table>
+      <p><a href="/docs">API docs</a></p>
+      <script>
+        fetch('/api/v1/reports/data-quality').then(r => r.json()).then(q => {
+          document.getElementById('quality').innerHTML =
+            `<p><strong>${q.total_cases}</strong> cases · avg completeness <strong>${q.completeness_average}%</strong> · duplicates flagged: <strong>${q.duplicate_candidates}</strong></p>`;
+        });
+        fetch('/api/v1/cases').then(r => r.json()).then(async cases => {
+          const scores = await Promise.all(
+            cases.map(c => fetch(`/api/v1/cases/${c.id}/completeness`).then(r => r.json()))
+          );
+          const scoreMap = Object.fromEntries(scores.map(s => [s.case_id, s.completeness_score]));
+          document.getElementById('cases').innerHTML = cases.map(c => {
+            const score = scoreMap[c.id] ?? '—';
+            const low = typeof score === 'number' && score < 70 ? ' class="warn"' : '';
+            return `<tr><td>${c.case_number}</td><td>${c.child_first_name} ${c.child_last_name}</td><td>${c.county || '—'}</td><td>${c.status}</td><td${low}>${score}${typeof score === 'number' ? '%' : ''}</td></tr>`;
+          }).join('');
+        });
+      </script>
+    </body>
     </html>
     """

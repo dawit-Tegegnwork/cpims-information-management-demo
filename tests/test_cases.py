@@ -47,6 +47,19 @@ def test_status_update(client):
         "child_last_name": "Test",
     }
     case_id = client.post("/api/v1/cases", json=payload).json()["id"]
+    registered = client.patch(f"/api/v1/cases/{case_id}/status?status=registered")
+    assert registered.status_code == 200
     response = client.patch(f"/api/v1/cases/{case_id}/status?status=active")
     assert response.status_code == 200
     assert response.json()["status"] == "active"
+
+
+def test_invalid_status_transition_rejected(client):
+    payload = {
+        "case_number": "TEST-BAD-STATUS",
+        "child_first_name": "Sam",
+        "child_last_name": "Test",
+    }
+    case_id = client.post("/api/v1/cases", json=payload).json()["id"]
+    response = client.patch(f"/api/v1/cases/{case_id}/status?status=active")
+    assert response.status_code == 400

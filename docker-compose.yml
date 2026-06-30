@@ -4,9 +4,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      CPIMS_DATABASE_URL: sqlite:///./cpims_demo.db
+      CPIMS_DATABASE_URL: sqlite:////data/cpims_demo.db
     volumes:
-      - cpims_data:/app
+      - cpims_data:/data
 
 volumes:
   cpims_data:

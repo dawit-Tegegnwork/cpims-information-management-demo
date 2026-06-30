@@ -6,6 +6,13 @@ A portfolio-quality demonstration of **Child Protection Information Management S
 
 **Requirements:** Python 3.12+
 
+## Demo scenario (3–5 minutes)
+
+1. `uvicorn app.main:app --reload` or `docker compose up --build`
+2. Open http://127.0.0.1:8000/dashboard — case list + completeness
+3. `GET /api/v1/reports/data-quality` — duplicate and completeness metrics
+4. `GET /api/v1/duplicates` — review duplicate candidates
+
 ## Screenshot
 
 ![OpenAPI docs](docs/screenshots/swagger.png)
