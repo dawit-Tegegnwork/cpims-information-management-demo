@@ -131,29 +131,44 @@ def dashboard_page():
     <html lang="en">
     <head>
       <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>CPIMS Demo Dashboard</title>
       <style>
-        body { font-family: system-ui, sans-serif; margin: 2rem; background: #f8fafc; color: #0f172a; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; }
-        th, td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 0.9rem; }
-        th { background: #f1f5f9; }
-        .warn { color: #b45309; font-weight: 600; }
+        body { font-family: system-ui, sans-serif; margin: 0; background: #FBF7F0; color: #0E2A3B; }
+        .banner { background: #ecfdf5; border-bottom: 1px solid #6ee7b7; color: #065f46; padding: 0.65rem 1.5rem; font-size: 0.85rem; }
+        main { max-width: 1000px; margin: 0 auto; padding: 1.75rem 1.25rem; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin: 1rem 0 1.5rem; }
+        .stat { background: #fff; border: 1px solid #E8DFD0; border-radius: 12px; padding: 1rem; }
+        .stat span { font-size: 0.7rem; text-transform: uppercase; color: #5B6B73; }
+        .stat strong { display: block; font-size: 1.5rem; margin-top: 0.25rem; color: #0E9E8E; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #E8DFD0; border-radius: 12px; overflow: hidden; }
+        th, td { padding: 0.75rem 1rem; border-bottom: 1px solid #E8DFD0; text-align: left; font-size: 0.88rem; }
+        th { background: #F8F3EA; font-size: 0.72rem; text-transform: uppercase; color: #5B6B73; }
+        .warn { color: #F2742C; font-weight: 600; }
+        .bar { height: 8px; background: #F4ECDE; border-radius: 4px; overflow: hidden; min-width: 80px; }
+        .bar i { display: block; height: 100%; background: #1FA85B; border-radius: 4px; }
+        .bar.low i { background: #F2742C; }
+        a { color: #0E9E8E; font-weight: 600; }
       </style>
     </head>
     <body>
-      <h1>CPIMS Operations Dashboard</h1>
-      <p>Synthetic case records — portfolio demo only.</p>
-      <div id="quality">Loading data quality summary...</div>
-      <h2>Cases</h2>
-      <table>
-        <thead><tr><th>Case #</th><th>Child</th><th>County</th><th>Status</th><th>Completeness</th></tr></thead>
-        <tbody id="cases"><tr><td colspan="5">Loading...</td></tr></tbody>
-      </table>
-      <p><a href="/docs">API docs</a></p>
+      <div class="banner"><strong>Synthetic demo only.</strong> Not official CPIMS. No real individuals or case records.</div>
+      <main>
+        <h1>CPIMS Operations Dashboard</h1>
+        <p>Case completeness, duplicate flags, and quality metrics.</p>
+        <div class="stats" id="stats">Loading...</div>
+        <table>
+          <thead><tr><th>Case #</th><th>Child</th><th>County</th><th>Status</th><th>Completeness</th></tr></thead>
+          <tbody id="cases"><tr><td colspan="5">Loading...</td></tr></tbody>
+        </table>
+        <p style="margin-top:1.25rem"><a href="/">Home</a> · <a href="/docs">API docs</a></p>
+      </main>
       <script>
         fetch('/api/v1/reports/data-quality').then(r => r.json()).then(q => {
-          document.getElementById('quality').innerHTML =
-            `<p><strong>${q.total_cases}</strong> cases · avg completeness <strong>${q.completeness_average}%</strong> · duplicates flagged: <strong>${q.duplicate_candidates}</strong></p>`;
+          document.getElementById('stats').innerHTML = `
+            <div class="stat"><span>Total cases</span><strong>${q.total_cases}</strong></div>
+            <div class="stat"><span>Avg completeness</span><strong>${q.completeness_average}%</strong></div>
+            <div class="stat"><span>Duplicates flagged</span><strong>${q.duplicate_candidates}</strong></div>`;
         });
         fetch('/api/v1/cases').then(r => r.json()).then(async cases => {
           const scores = await Promise.all(
@@ -161,9 +176,15 @@ def dashboard_page():
           );
           const scoreMap = Object.fromEntries(scores.map(s => [s.case_id, s.completeness_score]));
           document.getElementById('cases').innerHTML = cases.map(c => {
-            const score = scoreMap[c.id] ?? '—';
-            const low = typeof score === 'number' && score < 70 ? ' class="warn"' : '';
-            return `<tr><td>${c.case_number}</td><td>${c.child_first_name} ${c.child_last_name}</td><td>${c.county || '—'}</td><td>${c.status}</td><td${low}>${score}${typeof score === 'number' ? '%' : ''}</td></tr>`;
+            const score = scoreMap[c.id] ?? 0;
+            const low = score < 70;
+            return `<tr>
+              <td>${c.case_number}</td>
+              <td>${c.child_first_name} ${c.child_last_name}</td>
+              <td>${c.county || '—'}</td>
+              <td>${c.status}</td>
+              <td><div class="bar ${low ? 'low' : ''}"><i style="width:${score}%"></i></div> <span class="${low ? 'warn' : ''}">${score}%</span></td>
+            </tr>`;
           }).join('');
         });
       </script>

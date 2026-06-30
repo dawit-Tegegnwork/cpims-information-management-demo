@@ -12,7 +12,8 @@ This is a **production-style portfolio project** using **synthetic child-protect
 
 | Channel | URL |
 |---------|-----|
-| **Cloud live demo** | Coming soon — deploy via Docker on Render (see `docker-compose.yml`) |
+| **Cloud live demo** | https://cpims-information-management-demo.onrender.com/dashboard (free tier — cold start ~30s) |
+| **API docs** | https://cpims-information-management-demo.onrender.com/docs |
 | **Local** | `http://127.0.0.1:8000` after `docker compose up --build` |
 
 ## Quick Test in 3 Minutes
@@ -63,7 +64,7 @@ All cases, guardians, and reports use **synthetic data only**. No real individua
 
 ## Screenshot
 
-![OpenAPI docs](docs/screenshots/swagger.png)
+![Operations dashboard](docs/screenshots/dashboard.png)
 
 > **Important:** All data in this repository is **synthetic**. No real individuals, cases, or employer systems are represented. This project is designed for recruiters and hiring managers to evaluate information management and data quality engineering skills.
 
