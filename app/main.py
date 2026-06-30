@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from datetime import date
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 from app.config import settings
 from app.database import SessionLocal, init_db
@@ -95,3 +96,54 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.include_router(router)
+
+
+@app.get("/", response_class=HTMLResponse)
+def landing_page():
+    return """
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>CPIMS Information Management Demo</title>
+        <style>
+          body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #f8fafc; color: #102033; }
+          main { max-width: 1040px; margin: 0 auto; padding: 56px 22px; }
+          .hero { border-radius: 30px; padding: 40px; background: #ffffff; box-shadow: 0 24px 70px rgba(15, 23, 42, .12); border: 1px solid #e2e8f0; }
+          .kicker { color: #0f766e; text-transform: uppercase; letter-spacing: .16em; font-size: 12px; font-weight: 800; }
+          h1 { margin: 12px 0; font-size: clamp(34px, 6vw, 62px); line-height: .98; letter-spacing: -.05em; }
+          p { color: #475569; line-height: 1.7; font-size: 17px; }
+          .notice { margin-top: 18px; padding: 14px 16px; border-radius: 16px; background: #ecfdf5; color: #065f46; border: 1px solid #99f6e4; }
+          .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+          .card { border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px; background: #f8fafc; }
+          .card strong { display: block; margin-bottom: 8px; color: #0f172a; }
+          .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+          a { color: #fff; background: #0f766e; padding: 12px 16px; border-radius: 999px; text-decoration: none; font-weight: 800; }
+          a.secondary { color: #0f766e; background: #ecfdf5; border: 1px solid #99f6e4; }
+        </style>
+      </head>
+      <body>
+        <main>
+          <section class="hero">
+            <div class="kicker">Synthetic information management demo</div>
+            <h1>Data quality, duplicate detection, and reporting for sensitive case records.</h1>
+            <p>
+              This portfolio project demonstrates database-backed case registration, completeness scoring,
+              duplicate-candidate review, CSV import/export, and operational reporting workflows.
+            </p>
+            <div class="notice">Synthetic demo only. Not official CPIMS and never for real case records.</div>
+            <div class="grid">
+              <div class="card"><strong>Data quality</strong>Required-field completeness and reporting metrics.</div>
+              <div class="card"><strong>Confidentiality</strong>Privacy notes and synthetic records only.</div>
+              <div class="card"><strong>NGO readiness</strong>CSV workflows, user guide, and reporting documentation.</div>
+            </div>
+            <div class="actions">
+              <a href="/docs">Open API docs</a>
+              <a class="secondary" href="/api/v1/reports/data-quality">View data quality report</a>
+            </div>
+          </section>
+        </main>
+      </body>
+    </html>
+    """
