@@ -6,6 +6,54 @@ A portfolio-quality demonstration of **Child Protection Information Management S
 
 **Requirements:** Python 3.12+
 
+This is a **production-style portfolio project** using **synthetic child-protection case data**. It demonstrates information management, data quality, and API design patterns — not a deployed government or NGO production system.
+
+## Live Demo
+
+| Channel | URL |
+|---------|-----|
+| **Cloud live demo** | Coming soon — deploy via Docker on Render (see `docker-compose.yml`) |
+| **Local** | `http://127.0.0.1:8000` after `docker compose up --build` |
+
+## Quick Test in 3 Minutes
+
+```bash
+docker compose up --build
+curl http://localhost:8000/health
+```
+
+1. Open http://localhost:8000/ — landing page  
+2. Open http://localhost:8000/dashboard — case list and completeness scores  
+3. `curl http://localhost:8000/api/v1/reports/data-quality`  
+4. Open http://localhost:8000/docs — explore case APIs  
+
+## Production-Style Features
+
+- `/health` JSON check  
+- `/` landing page with recruiter test path  
+- HTML operations dashboard  
+- Data completeness scoring and duplicate detection  
+- CSV import/export  
+- Docker Compose + GitHub Actions CI  
+
+## Health Check
+
+```bash
+curl http://localhost:8000/health
+# {"status":"ok","service":"cpims-information-management-demo"}
+```
+
+## Synthetic Data Notice
+
+All cases, guardians, and reports use **synthetic data only**. No real individuals, cases, or employer systems are represented.
+
+## What Recruiters Can Evaluate
+
+- FastAPI + SQLite/Postgres data modeling  
+- Data quality and duplicate-detection logic  
+- Case lifecycle and reporting APIs  
+- Portfolio-ready documentation and testing  
+
 ## Demo scenario (3–5 minutes)
 
 1. `uvicorn app.main:app --reload` or `docker compose up --build`

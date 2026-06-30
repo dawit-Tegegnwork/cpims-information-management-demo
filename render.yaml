@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: cpims-information-management-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: CPIMS_DATABASE_URL
+        value: sqlite:////tmp/cpims_demo.db
